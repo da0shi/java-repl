@@ -50,7 +50,7 @@ public class Evaluator {
     private EvaluationClassLoader classLoader;
     private EvaluationContext context;
 
-	private JFrame frame = null;
+    private JFrame frame = null;
 
     public Evaluator() {
         initializeEvaluator(evaluationContext());
@@ -68,8 +68,8 @@ public class Evaluator {
                         if (resultForValue.isLeft() && resultForValue.left() instanceof ExpressionCompilationException && expression instanceof Value) {
                             Either<Throwable, Evaluation> resultForStatement = evaluate(new Statement(expr));
                             return resultForStatement.isLeft() && resultForStatement.left() instanceof ExpressionCompilationException
-                                    ? Left.<Throwable, Evaluation>left(new ExpressionCompilationException(sequence(resultForStatement.left().getMessage(), resultForValue.left().getMessage()).unique().toString("\n\n")))
-                                    : resultForStatement;
+                                ? Left.<Throwable, Evaluation>left(new ExpressionCompilationException(sequence(resultForStatement.left().getMessage(), resultForValue.left().getMessage()).unique().toString("\n\n")))
+                                : resultForStatement;
                         }
 
                         return resultForValue;
@@ -212,7 +212,7 @@ public class Evaluator {
     private Either<Throwable, Evaluation> evaluate(Type expression) {
         if (getSystemJavaCompiler() == null) {
             return left((Throwable) new FileNotFoundException("Java compiler not found." +
-                    "This can occur when JavaREPL was run with JRE instead of JDK or JDK is not configured correctly."));
+                        "This can occur when JavaREPL was run with JRE instead of JDK or JDK is not configured correctly."));
         }
 
         try {
@@ -220,7 +220,7 @@ public class Evaluator {
             File outputJavaFile = file(outputPath, expression.type() + ".java");
 
             String sources = renderExpressionClass(context, expression.type(), expression)
-                    .replace(EXPRESSION_TOKEN, renderExpressionSource(expression));
+                .replace(EXPRESSION_TOKEN, renderExpressionSource(expression));
 
             Files.write(sources.getBytes(), outputJavaFile);
             compile(outputJavaFile);
@@ -278,14 +278,14 @@ public class Evaluator {
         ReplViz applet = new ReplViz();
         applet.init();
 
-		if (frame == null) {
-			frame = new JFrame();
-			frame.setTitle("Java Repl");
-			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		} else {
-			frame.getContentPane().removeAll();
-		}
-		frame.getContentPane().add(applet);
+        if (frame == null) {
+            frame = new JFrame();
+            frame.setTitle("Java Repl");
+            frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        } else {
+            frame.getContentPane().removeAll();
+        }
+        frame.getContentPane().add(applet);
         frame.pack();
         frame.setVisible(true);
 
@@ -294,7 +294,7 @@ public class Evaluator {
 
             File outputJavaFile = file(context.outputDirectory(), className + ".java");
             final String sources = renderExpressionClass(newContext, className, expression)
-                    .replace(EXPRESSION_TOKEN, renderExpressionSource(expression));
+                .replace(EXPRESSION_TOKEN, renderExpressionSource(expression));
 
             Files.write(sources.getBytes(), outputJavaFile);
 
@@ -325,40 +325,40 @@ public class Evaluator {
 
     private Sequence<Result> modifiedResults(final Object expressionInstance) {
         return sequence(expressionInstance.getClass().getDeclaredFields())
-                .reduceLeft(new Reducer<Field, Sequence<Result>>() {
-                    public Sequence<Result> call(Sequence<Result> results, Field field) throws Exception {
-                        Option<Result> result = result(field.getName()).filter(where(value(), not(equalTo(field.get(expressionInstance)))));
+            .reduceLeft(new Reducer<Field, Sequence<Result>>() {
+                public Sequence<Result> call(Sequence<Result> results, Field field) throws Exception {
+                    Option<Result> result = result(field.getName()).filter(where(value(), not(equalTo(field.get(expressionInstance)))));
 
-                        if (result.isEmpty())
-                            return results;
+                    if (result.isEmpty())
+                        return results;
 
-                        return results.append(Result.result(field.getName(), field.get(expressionInstance)));
+                    return results.append(Result.result(field.getName(), field.get(expressionInstance)));
 
-                    }
+                }
 
-                    public Sequence<Result> identity() {
-                        return empty(Result.class);
-                    }
-                });
+                public Sequence<Result> identity() {
+                    return empty(Result.class);
+                }
+            });
     }
 
     private String nextResultKeyFor(Expression expression) {
         return (expression instanceof Value)
-                ? context.nextResultKey()
-                : expression.key();
+            ? context.nextResultKey()
+            : expression.key();
     }
 
     private Option<java.lang.reflect.Type> typeFor(Expression expression) {
         return (expression instanceof AssignmentWithType)
-                ? Option.some(((AssignmentWithType) expression).type())
-                : Option.<java.lang.reflect.Type>none();
+            ? Option.some(((AssignmentWithType) expression).type())
+            : Option.<java.lang.reflect.Type>none();
     }
 
     private void compile(File file) throws Exception {
         String classpath =
-                sequence(System.getProperty("java.class.path"))
-                        .join(sequence(classLoader.getURLs()).map(urlAsFilePath()))
-                        .toString(pathSeparator);
+            sequence(System.getProperty("java.class.path"))
+            .join(sequence(classLoader.getURLs()).map(urlAsFilePath()))
+            .toString(pathSeparator);
         JavaCompiler compiler = getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
