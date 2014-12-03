@@ -40,10 +40,17 @@ import static javarepl.rendering.ExpressionSourceRenderer.renderExpressionSource
 import static javarepl.rendering.ExpressionTokenRenderer.EXPRESSION_TOKEN;
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
 
+import javarepl.replviz.ReplViz;
+import javax.swing.JFrame;
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.view.mxGraph;
+
 public class Evaluator {
 
     private EvaluationClassLoader classLoader;
     private EvaluationContext context;
+
+	private JFrame frame = null;
 
     public Evaluator() {
         initializeEvaluator(evaluationContext());
@@ -267,6 +274,20 @@ public class Evaluator {
 
     private Either<Throwable, Evaluation> evaluateExpression(final Expression expression) {
         final String className = randomIdentifier("Evaluation");
+
+        ReplViz applet = new ReplViz();
+        applet.init();
+
+		if (frame == null) {
+			frame = new JFrame();
+			frame.setTitle("Java Repl");
+			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		} else {
+			frame.getContentPane().removeAll();
+		}
+		frame.getContentPane().add(applet);
+        frame.pack();
+        frame.setVisible(true);
 
         try {
             EvaluationContext newContext = context.removeExpressionWithKey(expression.key());
