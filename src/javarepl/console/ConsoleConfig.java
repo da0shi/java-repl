@@ -82,7 +82,9 @@ public final class ConsoleConfig {
                 .append(ListValues.class)
                 .append(ShowLastSource.class)
                 .append(ShowTypeOfExpression.class)
-                .append(CheckExpression.class);
+                .append(CheckExpression.class)
+                .append(JavacSourceFile.class)
+                ;
     }
 
 }
