@@ -39,6 +39,9 @@ public final class ListValues extends Command {
             listImports();
         } else if (items.equals("methods")) {
             listMethods();
+        } else if (items.equals("dump")) {
+            logger.info(listValues("Dump Expressions", evaluator.expressions()));
+            logger.info(listValues("Dump Results", evaluator.results()));
         } else {
             listResults();
             listTypes();
