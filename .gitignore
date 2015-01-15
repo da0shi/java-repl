@@ -9,3 +9,4 @@ target
 java-repl-intellij-plugin.zip
 out
 
+.*.swp
