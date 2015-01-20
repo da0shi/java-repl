@@ -156,4 +156,10 @@ public class ReplViz
 		visualizer.initGraphs();
 		return visualizer;
 	}
+	public void reset ()
+	{
+		graph = null;
+		JFrame frame = SwingUtilities.windowForComponent(this);
+		frame.dispose();
+	}
 }
