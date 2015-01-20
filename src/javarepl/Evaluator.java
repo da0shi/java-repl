@@ -40,8 +40,11 @@ import static javarepl.rendering.ExpressionSourceRenderer.renderExpressionSource
 import static javarepl.rendering.ExpressionTokenRenderer.EXPRESSION_TOKEN;
 import static javax.tools.ToolProvider.getSystemJavaCompiler;
 
+import replviz.ReplViz;
+
 public class Evaluator {
 
+	private ReplViz replviz;
     private EvaluationClassLoader classLoader;
     private EvaluationContext context;
 
@@ -151,6 +154,8 @@ public class Evaluator {
     }
 
     private void initializeEvaluator(EvaluationContext evaluationContext) {
+		replviz.reset();
+		replviz = ReplViz.run();
         context = evaluationContext;
         classLoader = evaluationClassLoader(context.outputDirectory());
     }
@@ -291,6 +296,7 @@ public class Evaluator {
 
             if (resultObject != null || !method.getReturnType().equals(void.class)) {
                 Result result = Result.result(nextResultKeyFor(expression), resultObject, typeFor(expression));
+				replviz.addResult(result.key(), result.value(), result.type());
                 context = newContext.addExpression(expression).addResults(modifiedResults.append(result)).lastSource(sources);
                 return right(evaluation(expression, some(result)));
             } else {
