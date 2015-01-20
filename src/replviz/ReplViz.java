@@ -82,7 +82,7 @@ public class ReplViz
 			}
 			String classname = value.getClass().getName();
 			mxCell var = (mxCell) graph.insertVertex(resultListCell, null,
-					result.strType() + " | "+ result.valueRef(),
+					result.strType() +"  "+  result.key() +" = "+ result.valueRef(),
 					0, y, VARIABLE_WIDTH, VARIABLE_HEIGHT);
 			if (y == 0) y = 20;
 			if (! (result.type() instanceof Class) || ! ((Class)result.type()).isPrimitive()) {
