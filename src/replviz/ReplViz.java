@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.BorderLayout;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -20,6 +22,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxStylesheet;
 
 public class ReplViz
 	extends JPanel
@@ -140,6 +143,25 @@ public class ReplViz
 		frame.getContentPane().add(new mxGraphComponent(graph));
 	}
 
+	private void initEdgeStyle ()
+	{
+		if (graph == null) return;
+		Map<String, Object> edge = new HashMap<String, Object>();
+		edge.put(mxConstants.STYLE_ROUNDED, true);
+		edge.put(mxConstants.STYLE_ORTHOGONAL, false);
+		edge.put(mxConstants.STYLE_EDGE, "elbowEdgeStyle");
+		edge.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CONNECTOR);
+		edge.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
+		edge.put(mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
+		edge.put(mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
+		edge.put(mxConstants.STYLE_STROKECOLOR, "#000000");
+		edge.put(mxConstants.STYLE_FONTCOLOR, "#446299");
+
+		mxStylesheet edgeStyle = new mxStylesheet();
+		edgeStyle.setDefaultEdgeStyle(edge);
+		graph.setStylesheet(edgeStyle);
+	}
+
 	public static ReplViz run ()
 	{
 		try {
@@ -154,6 +176,7 @@ public class ReplViz
 		ReplViz visualizer = new ReplViz();
 		visualizer.initFrame().setVisible(true);
 		visualizer.initGraphs();
+		visualizer.initEdgeStyle();
 		return visualizer;
 	}
 	public void close ()
