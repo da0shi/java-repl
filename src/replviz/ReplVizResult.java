@@ -47,6 +47,7 @@ public class ReplVizResult
 	}
 	public String valueRef ()
 	{
+		if (value == null) return "Null";
 		if (value instanceof Class) {
 			return getType(extractType(value.getClass())) +"@"+ Integer.toHexString(value.hashCode());
 		}
