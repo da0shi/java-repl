@@ -154,7 +154,7 @@ public class Evaluator {
     }
 
     private void initializeEvaluator(EvaluationContext evaluationContext) {
-		replviz.reset();
+		if (replviz != null) replviz.close();
 		replviz = ReplViz.run();
         context = evaluationContext;
         classLoader = evaluationClassLoader(context.outputDirectory());
