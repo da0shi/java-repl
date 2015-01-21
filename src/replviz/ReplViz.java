@@ -80,7 +80,6 @@ public class ReplViz
 				mxGeometry geo = lastChild.getGeometry();
 				y = (int)(geo.getY() + geo.getHeight());
 			}
-			String classname = value.getClass().getName();
 			mxCell var = (mxCell) graph.insertVertex(resultListCell, null,
 					result.strType() +"  "+  result.key() +" = "+ result.valueRef(),
 					0, y, VARIABLE_WIDTH, VARIABLE_HEIGHT);
@@ -128,6 +127,7 @@ public class ReplViz
 		if (graph == null) return;
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 		Object parent = graph.getDefaultParent();
+
 		graph.getModel().beginUpdate();
 		try {
 			resultListCell = (mxCell) graph.insertVertex(
