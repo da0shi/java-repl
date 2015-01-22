@@ -27,7 +27,7 @@ public class ReplViz
 {
 	private static final long serialVersionUID = 10000000000001L;
 
-	public static final int FRAME_WIDTH = 500;
+	public static final int FRAME_WIDTH = 1280;
 	public static final int FRAME_HEIGHT = 800;
 	public static final int VARIABLE_LIST_WIDTH = 280;
 	public static final int VARIABLE_LIST_HEIGHT = 400;

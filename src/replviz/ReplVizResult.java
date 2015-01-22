@@ -101,7 +101,7 @@ public class ReplVizResult
 		try {
 			frame = (mxCell) graph.insertVertex(
 					parent, null, valueRef(), ReplViz.VARIABLE_LIST_WIDTH + 40, 0,
-					ReplViz.VARIABLE_LIST_WIDTH, ReplViz.VARIABLE_HEIGHT,
+					ReplViz.VARIABLE_LIST_WIDTH, 2 * ReplViz.VARIABLE_HEIGHT,
 					"shape=swimlane;foldable=0;fillColor=#999;fontColor=#000");
 
 			// if toString has been overridden
