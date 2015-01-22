@@ -95,9 +95,8 @@ public class ReplVizResult
 	private mxCell insertEntity (mxGraph graph)
 	{
 		Object parent = graph.getDefaultParent();
-		mxIGraphModel model = graph.getModel();
 		mxCell frame = null;
-		model.beginUpdate();
+		graph.getModel().beginUpdate();
 		try {
 			frame = (mxCell) graph.insertVertex(
 					parent, null, valueRef(), ReplViz.VARIABLE_LIST_WIDTH + 40, 0,
@@ -141,18 +140,17 @@ public class ReplVizResult
 
 	public void removeVar (mxGraph graph)
 	{
-		mxIGraphModel model = graph.getModel();
-		model.beginUpdate();
+		graph.getModel().beginUpdate();
 		try {
 			Object[] edges = graph.getEdgesBetween(refCell, entityCell);
 			for (Object edge: edges) {
-				model.remove(edge);
+				graph.getModel().remove(edge);
 			}
-			model.remove(refCell);
-			model.remove(entityCell);
+			graph.getModel().remove(refCell);
+			graph.getModel().remove(entityCell);
 		}
 		finally {
-			model.endUpdate();
+			graph.getModel().endUpdate();
 		}
 	}
 
