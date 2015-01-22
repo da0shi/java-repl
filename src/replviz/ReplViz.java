@@ -79,8 +79,6 @@ public class ReplViz
 			results.get(key).removeVar(graph);
 		}
 		results.put(key, result);
-
-		frame.getContentPane().add(new mxGraphComponent(graph));
 		frame.pack();
 	}
 
