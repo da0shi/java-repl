@@ -29,12 +29,12 @@ public class ReplViz
 {
 	private static final long serialVersionUID = 10000000000001L;
 
-	private static final int FRAME_WIDTH = 500;
-	private static final int FRAME_HEIGHT = 800;
-	private static final int VARIABLE_LIST_WIDTH = 240;
-	private static final int VARIABLE_LIST_HEIGHT = 400;
-	private static final int VARIABLE_WIDTH = VARIABLE_LIST_WIDTH;
-	private static final int VARIABLE_HEIGHT = 20;
+	public static final int FRAME_WIDTH = 500;
+	public static final int FRAME_HEIGHT = 800;
+	public static final int VARIABLE_LIST_WIDTH = 280;
+	public static final int VARIABLE_LIST_HEIGHT = 400;
+	public static final int VARIABLE_WIDTH = VARIABLE_LIST_WIDTH;
+	public static final int VARIABLE_HEIGHT = 20;
 
 	private static mxGraph graph;
 	private static mxGraphComponent graphComponent;
