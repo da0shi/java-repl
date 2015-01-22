@@ -98,7 +98,6 @@ public class ReplViz
 		JFrame frame = new JFrame();
 		frame.getContentPane().add(this);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(FRAME_HEIGHT, FRAME_WIDTH);
 		frame.setTitle(appTitle);
 
 		return frame;
