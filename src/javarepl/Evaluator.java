@@ -296,7 +296,9 @@ public class Evaluator {
 
             if (resultObject != null || !method.getReturnType().equals(void.class)) {
                 Result result = Result.result(nextResultKeyFor(expression), resultObject, typeFor(expression));
-				replviz.addResult(result.key(), result.value(), result.type());
+				if (! result.key().matches("^res\\d+$")) {
+					replviz.addResult(result.key(), result.value(), result.type());
+				}
                 context = newContext.addExpression(expression).addResults(modifiedResults.append(result)).lastSource(sources);
                 return right(evaluation(expression, some(result)));
             } else {

@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 
 import java.awt.Color;
 import java.awt.BorderLayout;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -39,9 +37,11 @@ public class ReplViz
 	private static mxGraph graph;
 	private static mxGraphComponent graphComponent;
 	private String appTitle;
-	private List<ReplVizResult> results;
+	private Map<String, ReplVizResult> results;
 
 	private mxCell resultListCell;
+
+	private Map<String, mxCell> ref;
 
 	public ReplViz ()
 	{
@@ -53,7 +53,7 @@ public class ReplViz
 		this.appTitle = title;
 		graphComponent = component;
 		graph = graphComponent.getGraph();
-		this.results = new ArrayList<ReplVizResult>();
+		this.results = new HashMap<String, ReplVizResult>();
 
 		graph.setCellsEditable(false);
 		graph.setCellsMovable(false);
@@ -71,36 +71,17 @@ public class ReplViz
 		if (graph == null) return;
 
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-		ReplVizResult result = new ReplVizResult(key, value, type);
 
-		Object parent = graph.getDefaultParent();
-		graph.getModel().beginUpdate();
-		try {
-			int y = 0;
-			int childCount = resultListCell.getChildCount();
-			if (childCount > 0) {
-				mxICell lastChild = resultListCell.getChildAt(childCount - 1);
-				mxGeometry geo = lastChild.getGeometry();
-				y = (int)(geo.getY() + geo.getHeight());
-			}
-			mxCell var = (mxCell) graph.insertVertex(resultListCell, null,
-					result.strType() +"  "+  result.key() +" = "+ result.valueRef(),
-					0, y, VARIABLE_WIDTH, VARIABLE_HEIGHT);
-			if (y == 0) y = 20;
-			if (! (result.type() instanceof Class) || ! ((Class)result.type()).isPrimitive()) {
-				mxCell inst = (mxCell) graph.insertVertex(parent, null,
-						result.value().toString(),
-						300, y, VARIABLE_WIDTH, VARIABLE_HEIGHT);
-				graph.insertEdge(parent, null, null, var, inst);
-			}
+		ReplVizResult result = new ReplVizResult(key, value, type);
+		result.insertVar(graph, resultListCell);
+		applyEdgeStyle();
+		if (results.containsKey(key)) {
+			results.get(key).removeVar(graph);
 		}
-		catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		finally {
-			graph.getModel().endUpdate();
-		}
+		results.put(key, result);
+
 		frame.getContentPane().add(new mxGraphComponent(graph));
+		frame.pack();
 	}
 
 
@@ -134,16 +115,17 @@ public class ReplViz
 		graph.getModel().beginUpdate();
 		try {
 			resultListCell = (mxCell) graph.insertVertex(
-					parent, null, "Variables", 20, 20,
+					parent, null, "Variables", 0, 0,
 					VARIABLE_LIST_WIDTH, VARIABLE_LIST_HEIGHT, "shape=swimlane;foldable=0;fillColor=#999;fontColor=#000");
 		}
 		finally {
 			graph.getModel().endUpdate();
 		}
 		frame.getContentPane().add(new mxGraphComponent(graph));
+		frame.pack();
 	}
 
-	private void initEdgeStyle ()
+	private void applyEdgeStyle ()
 	{
 		if (graph == null) return;
 		Map<String, Object> edge = new HashMap<String, Object>();
@@ -176,7 +158,7 @@ public class ReplViz
 		ReplViz visualizer = new ReplViz();
 		visualizer.initFrame().setVisible(true);
 		visualizer.initGraphs();
-		visualizer.initEdgeStyle();
+		visualizer.applyEdgeStyle();
 		return visualizer;
 	}
 	public void close ()
