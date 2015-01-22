@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxGeometry;
@@ -55,12 +56,12 @@ public class ReplViz
 		graph = graphComponent.getGraph();
 		this.results = new HashMap<String, ReplVizResult>();
 
-		graph.setCellsEditable(false);
-		graph.setCellsMovable(false);
-		graph.setCellsResizable(false);
-		graph.setCellsSelectable(false);
 		graph.setAllowDanglingEdges(false);
 		graph.setAutoSizeCells(true);
+		graph.setCellsEditable(false);
+		graph.setCellsMovable(true);
+		graph.setCellsResizable(true);
+		graph.setCellsSelectable(false);
 
 		setLayout(new BorderLayout());
 		add(graphComponent, BorderLayout.CENTER);
@@ -79,9 +80,15 @@ public class ReplViz
 			results.get(key).removeVar(graph);
 		}
 		results.put(key, result);
+		graph.getModel().beginUpdate();
+		try {
+			new mxStackLayout(graph, false).execute(resultListCell);
+		}
+		finally {
+			graph.getModel().endUpdate();
+		}
 		frame.pack();
 	}
-
 
 	public void addResult (String key, Object value)
 	{
