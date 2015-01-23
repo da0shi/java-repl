@@ -63,7 +63,7 @@ public class ReplVizResult
 		return value.toString();
 	}
 
-	public void insertVar (mxGraph graph, mxCell refbox)
+	public void insertVariable (mxGraph graph, mxCell refbox)
 	{
 		Object parent = graph.getDefaultParent();
 		graph.getModel().beginUpdate();
@@ -138,7 +138,7 @@ public class ReplVizResult
 		return frame;
 	}
 
-	public void removeVar (mxGraph graph)
+	public void removeVariable (mxGraph graph)
 	{
 		graph.getModel().beginUpdate();
 		try {

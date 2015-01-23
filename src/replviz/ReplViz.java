@@ -40,7 +40,7 @@ public class ReplViz
 	private String appTitle;
 	private Map<String, ReplVizResult> results;
 
-	private mxCell resultListCell;
+	private mxCell variableListCell;
 
 	private Map<String, mxCell> ref;
 
@@ -74,15 +74,15 @@ public class ReplViz
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 
 		ReplVizResult result = new ReplVizResult(key, value, type);
-		result.insertVar(graph, resultListCell);
+		result.insertVariable(graph, variableListCell);
 		applyEdgeStyle();
 		if (results.containsKey(key)) {
-			results.get(key).removeVar(graph);
+			results.get(key).removeVariable(graph);
 		}
 		results.put(key, result);
 		graph.getModel().beginUpdate();
 		try {
-			new mxStackLayout(graph, false).execute(resultListCell);
+			new mxStackLayout(graph, false).execute(variableListCell);
 		}
 		finally {
 			graph.getModel().endUpdate();
@@ -118,7 +118,7 @@ public class ReplViz
 
 		graph.getModel().beginUpdate();
 		try {
-			resultListCell = (mxCell) graph.insertVertex(
+			variableListCell = (mxCell) graph.insertVertex(
 					parent, null, "Variables", 0, 0,
 					VARIABLE_LIST_WIDTH, VARIABLE_LIST_HEIGHT, "shape=swimlane;foldable=0;fillColor=#999;fontColor=#000");
 		}
