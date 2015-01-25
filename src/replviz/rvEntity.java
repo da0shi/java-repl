@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.Modifier;
 import java.lang.StringBuilder;
+import java.util.List;
 import java.util.ArrayList;
 
 import com.mxgraph.model.mxCell;
@@ -14,28 +15,20 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
-public class ReplVizRef
+public class rvEntity
 {
-	private final Type type;
-	private final String key;
 	private final int hash;
+	private final Object value;
 
-	public ReplVizRef (Type type, String key, int hash)
+	public rvEntity (Object value)
 	{
-		this.type = type;
-		this.key = key;
-		this.hash = hash;
-	}
-	/*
-	private mxCell refCell;
-	private ReplVizEntity entity;
-
-	public ReplVizRef (Object value, String type)
-	{
-		this.key = key;
 		this.value = value;
-		this.type = type;
+		this.hash = value.hashCode();
 	}
+
+	/*
+	private mxCell entityCell;
+	private List<ReplVizResult> results;
 
 	public String key ()
 	{

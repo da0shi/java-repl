@@ -15,20 +15,18 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
-import static replviz.Utils.extractType;
-import static replviz.Utils.getType;
-import static replviz.Utils.isNotPrimitive;
+import replviz.Utils;
 
-public class ReplVizResult
+public class rvResult
 {
 	private final String key;
 	private final Object value;
 	private final Type type;
 
-	private mxCell refCell;
+	private mxCell referCell;
 	private mxCell entityCell;
 
-	public ReplVizResult (String key, Object value, Type type)
+	public rvResult (String key, Object value, Type type)
 	{
 		this.key = key;
 		this.value = value;
@@ -46,21 +44,27 @@ public class ReplVizResult
 	public Type type ()
 	{
 		if (value != null) {
-			return extractType(type);
+			return Utils.extractType(type);
 		}
-		return extractType(Object.class);
+		return Utils.extractType(Object.class);
+	}
+	public boolean isPrimitive ()
+	{
+		return Utils.isPrimitive(type);
 	}
 	public String strType ()
 	{
-		return getType(type);
+		return Utils.getType(type);
 	}
 	public String valueRef ()
 	{
-		if (value == null) return "Null";
-			if (isNotPrimitive(type)) {
-			return getType(extractType(value.getClass())) +"@"+ Integer.toHexString(value.hashCode());
+		if (value == null) {
+			return "NULL";
 		}
-		return value.toString();
+		if (isPrimitive()) {
+			return value.toString();
+		}
+		return Utils.getType(Utils.extractType(value.getClass())) +"@"+ Integer.toHexString(value.hashCode());
 	}
 
 	public void insertVariable (mxGraph graph, mxCell refbox)
@@ -75,13 +79,13 @@ public class ReplVizResult
 				mxGeometry geo = lastChild.getGeometry();
 				y = (int)(geo.getY() + geo.getHeight());
 			}
-			refCell  = (mxCell) graph.insertVertex(refbox, null,
+			referCell  = (mxCell) graph.insertVertex(refbox, null,
 					strType() +"  "+  key +" = "+ valueRef(),
 					0, y, ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
 			if (y == 0) y = 40;
-			if (isNotPrimitive(type)) {
+			if (! isPrimitive()) {
 				entityCell = insertEntity(graph);
-				graph.insertEdge(parent, null, null, refCell, entityCell);
+				graph.insertEdge(parent, null, null, referCell, entityCell);
 			}
 		}
 		catch (NullPointerException e) {
@@ -92,6 +96,24 @@ public class ReplVizResult
 		}
 	}
 
+	public mxCell referCell ()
+	{
+		return this.referCell;
+	}
+	public void referCell (mxCell cell)
+	{
+		this.referCell = cell;
+	}
+
+	public mxCell entityCell ()
+	{
+		return this.entityCell;
+	}
+	public void entityCell (mxCell cell)
+	{
+		this.entityCell = cell;
+	}
+
 	private mxCell insertEntity (mxGraph graph)
 	{
 		Object parent = graph.getDefaultParent();
@@ -99,8 +121,8 @@ public class ReplVizResult
 		graph.getModel().beginUpdate();
 		try {
 			frame = (mxCell) graph.insertVertex(
-					parent, null, valueRef(), ReplViz.VARIABLE_LIST_WIDTH + 40, 0,
-					ReplViz.VARIABLE_LIST_WIDTH, 2 * ReplViz.VARIABLE_HEIGHT,
+					parent, null, valueRef(), ReplViz.CONTAINER_WIDTH + 40, 0,
+					ReplViz.CONTAINER_WIDTH, 2 * ReplViz.VARIABLE_HEIGHT,
 					"shape=swimlane;foldable=0;fillColor=#999;fontColor=#000");
 
 			// if toString has been overridden
@@ -121,7 +143,7 @@ public class ReplVizResult
 					}
 
 					mxCell field  = (mxCell) graph.insertVertex(frame, null,
-							getType(f.getType()) +"  "+  f.getName() +" = "+ f.get(value),
+							Utils.getType(f.getType()) +"  "+  f.getName() +" = "+ f.get(value),
 							0, y, ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
 				}
 			}
@@ -137,21 +159,4 @@ public class ReplVizResult
 
 		return frame;
 	}
-
-	public void removeVariable (mxGraph graph)
-	{
-		graph.getModel().beginUpdate();
-		try {
-			Object[] edges = graph.getEdgesBetween(refCell, entityCell);
-			for (Object edge: edges) {
-				graph.getModel().remove(edge);
-			}
-			graph.getModel().remove(refCell);
-			graph.getModel().remove(entityCell);
-		}
-		finally {
-			graph.getModel().endUpdate();
-		}
-	}
-
 }

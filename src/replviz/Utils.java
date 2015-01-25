@@ -5,12 +5,18 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.Modifier;
 import java.lang.StringBuilder;
+import java.util.List;
 import java.util.ArrayList;
+
+import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxICell;
+import com.mxgraph.model.mxGeometry;
+
 public class Utils
 {
-	public static boolean isNotPrimitive (Type type)
+	public static boolean isPrimitive (Type type)
 	{
-		return (! (type instanceof Class) || ! ((Class)type).isPrimitive());
+		return (! (type instanceof Class) || ((Class)type).isPrimitive());
 	}
 	public static String getType (Type type)
 	{
@@ -74,4 +80,5 @@ public class Utils
 		}
 		return extractType(Object.class);
 	}
+
 }
