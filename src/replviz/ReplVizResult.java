@@ -25,7 +25,7 @@ public class ReplVizResult
 	private final Object value;
 	private final Type type;
 
-	private mxCell refCell;
+	private mxCell referCell;
 	private mxCell entityCell;
 
 	public ReplVizResult (String key, Object value, Type type)
@@ -75,13 +75,13 @@ public class ReplVizResult
 				mxGeometry geo = lastChild.getGeometry();
 				y = (int)(geo.getY() + geo.getHeight());
 			}
-			refCell  = (mxCell) graph.insertVertex(refbox, null,
+			referCell  = (mxCell) graph.insertVertex(refbox, null,
 					strType() +"  "+  key +" = "+ valueRef(),
 					0, y, ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
 			if (y == 0) y = 40;
 			if (isNotPrimitive(type)) {
 				entityCell = insertEntity(graph);
-				graph.insertEdge(parent, null, null, refCell, entityCell);
+				graph.insertEdge(parent, null, null, referCell, entityCell);
 			}
 		}
 		catch (NullPointerException e) {
@@ -90,6 +90,24 @@ public class ReplVizResult
 		finally {
 			graph.getModel().endUpdate();
 		}
+	}
+
+	public mxCell referCell ()
+	{
+		return this.referCell;
+	}
+	public void referCell (mxCell cell)
+	{
+		this.referCell = cell;
+	}
+
+	public mxCell entityCell ()
+	{
+		return this.entityCell;
+	}
+	public void entityCell (mxCell cell)
+	{
+		this.entityCell = cell;
 	}
 
 	private mxCell insertEntity (mxGraph graph)
@@ -142,12 +160,14 @@ public class ReplVizResult
 	{
 		graph.getModel().beginUpdate();
 		try {
-			Object[] edges = graph.getEdgesBetween(refCell, entityCell);
+			Object[] edges = graph.getEdgesBetween(referCell, entityCell);
 			for (Object edge: edges) {
 				graph.getModel().remove(edge);
 			}
-			graph.getModel().remove(refCell);
+			graph.getModel().remove(referCell);
 			graph.getModel().remove(entityCell);
+			referCell = null;
+			entityCell = null;
 		}
 		finally {
 			graph.getModel().endUpdate();
