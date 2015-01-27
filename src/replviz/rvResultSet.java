@@ -67,7 +67,7 @@ public class rvResultSet
 		try {
 
 			// if toString has been overridden
-			if (! Object.class.equals(value.getClass().getMethod("toString").getDeclaringClass())) {
+			if (Utils.isOverridden(value, "toString")) {
 				mxCell field  = (mxCell) graph.insertVertex(container, null,
 						value.toString(),
 						0, getStartOffsetY(container),
@@ -94,8 +94,6 @@ public class rvResultSet
 				}
 			}
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		finally {

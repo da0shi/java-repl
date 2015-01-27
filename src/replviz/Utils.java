@@ -14,7 +14,25 @@ import com.mxgraph.model.mxGeometry;
 
 public class Utils
 {
-	public static boolean hasEqualID(Object a, Object b)
+	public static boolean isOverridden (Object base, Object obj, String method)
+	{
+		try {
+			return ! base.equals(obj.getClass().getMethod(method).getDeclaringClass());
+		}
+		catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+	public static boolean isOverridden (Object obj, String method)
+	{
+		try {
+			return ! Object.class.equals(obj.getClass().getMethod(method).getDeclaringClass());
+		}
+		catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+	public static boolean hasEqualID (Object a, Object b)
 	{
 		System.out.println("Comparing: "+ System.identityHashCode(a) +"=="+ System.identityHashCode(b));
 		return System.identityHashCode(a) == System.identityHashCode(b);
@@ -40,6 +58,10 @@ public class Utils
 	public static String getPackageName (Class klass)
 	{
 		return (klass.getPackage() == null) ? "" : klass.getPackage().getName();
+	}
+	public static boolean isJavaPackage (Class klass)
+	{
+		return getPackageName(klass).indexOf("java") == 0;
 	}
 	public static String getType (Type type)
 	{

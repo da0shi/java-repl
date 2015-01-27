@@ -56,6 +56,17 @@ public class rvResult
 	{
 		return Utils.getType(type);
 	}
+	public String label ()
+	{
+		if (value == null) {
+			return "null";
+		}
+		if (Utils.isPrimitive(type)) {
+			return value.toString();
+		}
+
+		return Utils.getType(Utils.extractType(value.getClass())) +"@"+ Utils.getHexID(value);
+	}
 	public String valueRef ()
 	{
 		if (value == null) {
@@ -126,7 +137,7 @@ public class rvResult
 					"shape=swimlane;foldable=0;fillColor=#999;fontColor=#000");
 
 			// if toString has been overridden
-			if (! Object.class.equals(value.getClass().getMethod("toString").getDeclaringClass())) {
+			if (Utils.isOverridden(value, "toString")) {
 				mxCell field  = (mxCell) graph.insertVertex(frame, null,
 						value.toString().trim(),
 						0, 0, ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
@@ -148,8 +159,6 @@ public class rvResult
 				}
 			}
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		finally {
