@@ -47,7 +47,7 @@ public class rvResultSet
 		try {
 			referrer = (mxCell) graph.insertVertex(container, null,
 					result.strType() +"  "+  result.key() +" = "+ result.valueRef(),
-					0, getStartOffsetHeight(container),
+					0, getStartOffsetY(container),
 					ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
 		}
 		catch (NullPointerException e) {
@@ -59,10 +59,9 @@ public class rvResultSet
 		return referrer;
 	}
 
-	public mxCell insertEntity (mxGraph graph, mxCell container)
+	public mxCell insertEntity (mxGraph graph, mxCell container, Object value)
 	{
 		Object parent = graph.getDefaultParent();
-		Object value = result.value();
 		entity = container;
 		graph.getModel().beginUpdate();
 		try {
@@ -70,17 +69,27 @@ public class rvResultSet
 			// if toString has been overridden
 			if (! Object.class.equals(value.getClass().getMethod("toString").getDeclaringClass())) {
 				mxCell field  = (mxCell) graph.insertVertex(container, null,
-						result.value().toString(),
-						0, getStartOffsetHeight(container),
+						value.toString(),
+						0, getStartOffsetY(container),
+						ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
+			}
+			else if (value.getClass().isArray()) {
+				mxCell field  = (mxCell) graph.insertVertex(container, null,
+						javarepl.rendering.ValueRenderer.renderValue(value),
+						0, getStartOffsetY(container),
+						ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
+			} else if (value == null) {
+				mxCell field  = (mxCell) graph.insertVertex(container, null,
+						"NULL",
+						0, getStartOffsetY(container),
 						ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
 			}
 			else {
 				Field[] fields = value.getClass().getFields();
-				int y = 0;
 				for (Field f : fields) {
 					mxCell field  = (mxCell) graph.insertVertex(container, null,
 							Utils.getType(f.getType()) +"  "+  f.getName() +" = "+ f.get(value),
-							0, getStartOffsetHeight(container),
+							0, getStartOffsetY(container),
 							ReplViz.VARIABLE_WIDTH, ReplViz.VARIABLE_HEIGHT);
 				}
 			}
@@ -93,6 +102,10 @@ public class rvResultSet
 			graph.getModel().endUpdate();
 		}
 		return container;
+	}
+	public mxCell insertEntity (mxGraph graph, mxCell container)
+	{
+		return insertEntity(graph, container, result.value());
 	}
 
 	public void removeCells (mxGraph graph)
@@ -146,7 +159,7 @@ public class rvResultSet
 		}
 		return children;
 	}
-	private double getStartOffsetHeight (mxCell container)
+	private double getStartOffsetY (mxCell container)
 	{
 		int length = container.getChildCount();
 		if (length == 0) return 0;
