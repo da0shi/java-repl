@@ -64,7 +64,7 @@ public class rvResult
 		if (isPrimitive()) {
 			return value.toString();
 		}
-		return Utils.getType(Utils.extractType(value.getClass())) +"@"+ Integer.toHexString(value.hashCode());
+		return Utils.getType(Utils.extractType(value.getClass())) +"@"+ Utils.getHexID(value);
 	}
 
 	public void insertVariable (mxGraph graph, mxCell refbox)

@@ -188,7 +188,7 @@ public class ReplViz
 	{
 		if (value == null) return null;
 		for (rvResultSet resultset: results.values()) {
-			if (value.equals(resultset.result().value())) {
+			if (Utils.hasEqualID(value, resultset.result().value())) {
 				return resultset;
 			}
 		}

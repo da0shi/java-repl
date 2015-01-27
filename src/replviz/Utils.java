@@ -14,6 +14,20 @@ import com.mxgraph.model.mxGeometry;
 
 public class Utils
 {
+	public static boolean hasEqualID(Object a, Object b)
+	{
+		System.out.println("Comparing: "+ System.identityHashCode(a) +"=="+ System.identityHashCode(b));
+		return System.identityHashCode(a) == System.identityHashCode(b);
+	}
+	public static int getHashID (Object o)
+	{
+		return System.identityHashCode(o);
+	}
+	public static String getHexID (Object o)
+	{
+		return Integer.toHexString(getHashID(o));
+	}
+
 	public static String toString(Object val)
 	{
 		if (val == null) return "NULL";
