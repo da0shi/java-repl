@@ -155,9 +155,12 @@ public class ReplViz
 		mxRectangle tmp = new mxRectangle();
 		mxGeometry pgeo = new mxGeometry(0, 0, tmp.getWidth(), tmp.getHeight());
 		mxGeometry last = null;
+		List<String> done = new ArrayList<String>();
 		try {
 			for (rvResultSet resultset: results.values()) {
 				if (resultset.entity() == null) continue;
+				if (done.contains(resultset.result().value().toString())) continue;
+				done.add(resultset.result().value().toString());
 				mxGeometry geo = (mxGeometry) model.getGeometry(resultset.entity());
 				geo = (mxGeometry) geo.clone();
 				geo.setX(ENTITY_CONTAINER_OFFSET_X);

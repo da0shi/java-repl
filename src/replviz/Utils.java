@@ -14,9 +14,18 @@ import com.mxgraph.model.mxGeometry;
 
 public class Utils
 {
+	public static String toString(Object val)
+	{
+		if (val == null) return "NULL";
+		return val.toString();
+	}
 	public static boolean isPrimitive (Type type)
 	{
 		return (! (type instanceof Class) || ((Class)type).isPrimitive());
+	}
+	public static String getPackageName (Class klass)
+	{
+		return (klass.getPackage() == null) ? "" : klass.getPackage().getName();
 	}
 	public static String getType (Type type)
 	{
