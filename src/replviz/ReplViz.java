@@ -26,6 +26,7 @@ import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxStylesheet;
 
 public class ReplViz
@@ -36,11 +37,12 @@ public class ReplViz
 
 	static final int VARIABLE_CONTAINER_OFFSET_X = 0;
 	static final int ENTITY_CONTAINER_OFFSET_X = 350;
-	public static final int CONTAINER_WIDTH = 280;
+	public static final int CONTAINER_WIDTH = 260;
 	public static final int CONTAINER_HEIGHT = 60;
 	public static final int VARIABLE_WIDTH = CONTAINER_WIDTH;
 	public static final int VARIABLE_HEIGHT = 20;
-	public static final int ENTITY_SPACING = 10;
+	public static final int HORIZONTAL_SPACING = 60;
+	public static final int VERTICAL_SPACING = 10;
 
 	private static ReplViz self = null;
 
@@ -50,6 +52,7 @@ public class ReplViz
 	private Map<String, rvResultSet> results;
 
 	private mxCell variableListCell;
+	private Container rootContainer;
 
 	private ReplViz ()
 	{
@@ -77,47 +80,50 @@ public class ReplViz
 	public void addResult (String key, Object value, Type type)
 	{
 		if (graph == null) return;
+		rootContainer.addContent(type, key, value);
+		rootContainer.redraw();
+		/*
+		   rvResult result = new rvResult(key, value, type);
+		   rvResultSet resultset = null;
+		   if (results.containsKey(key)) {
+		   if (searchValue(results.get(key).result().value()) == null && searchValue(value) == null) {
+		   results.get(key).removeCells(graph);
+		   } else {
+		   results.get(key).removeEdge(graph);
+		   }
+		   results.remove(key);
+		   }
+		   resultset = new rvResultSet(result);
 
-		rvResult result = new rvResult(key, value, type);
-		rvResultSet resultset = null;
-		if (results.containsKey(key)) {
-			if (searchValue(results.get(key).result().value()) == null && searchValue(value) == null) {
-				results.get(key).removeCells(graph);
-			} else {
-				results.get(key).removeEdge(graph);
-			}
-			results.remove(key);
-		}
-		resultset = new rvResultSet(result);
-
-		mxCell referrer = resultset.insertRefer(graph, variableListCell);
-		rvResultSet foundResult = searchValue(value);
-		mxCell entity = null;
-		if (foundResult != null) {
-			entity = foundResult.entity();
-		}
-		if (result.value() != null && ! result.isPrimitive()) {
-			if (entity == null) {
-				mxCell entityContainer =
-					insertContainer(null, result.valueRef(), ENTITY_CONTAINER_OFFSET_X, 0);
-				entity = resultset.insertEntity(graph, entityContainer);
-			} else {
-				resultset.entity(entity);
-			}
-		}
-		results.put(key, resultset);
-		if (entity != null) {
-			graph.getModel().beginUpdate();
-			try {
-				graph.insertEdge(graph.getDefaultParent(), null, null, referrer, entity);
-			}
-			finally {
-				graph.getModel().endUpdate();
-			}
-			updateEntityLayout();
-		}
-		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
+		   mxCell referrer = resultset.insertRefer(graph, variableListCell);
+		   rvResultSet foundResult = searchValue(value);
+		   mxCell entity = null;
+		   if (foundResult != null) {
+		   entity = foundResult.entity();
+		   }
+		   if (result.value() != null && ! result.isPrimitive()) {
+		   if (entity == null) {
+		   mxCell entityContainer =
+		   insertContainer(null, result.valueRef(), ENTITY_CONTAINER_OFFSET_X, 0);
+		   entity = resultset.insertEntity(graph, entityContainer);
+		   } else {
+		   resultset.entity(entity);
+		   }
+		   }
+		   results.put(key, resultset);
+		   if (entity != null) {
+		   graph.getModel().beginUpdate();
+		   try {
+		   graph.insertEdge(graph.getDefaultParent(), null, null, referrer, entity);
+		   }
+		   finally {
+		   graph.getModel().endUpdate();
+		   }
+		   updateEntityLayout();
+		   }
+		   JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 		// frame.pack();
+		*/
 	}
 
 	public mxCell insertContainer (Object parent, String title, double x, double y)
@@ -144,6 +150,7 @@ public class ReplViz
 	public void close ()
 	{
 		self = null;
+		rootContainer.reset();
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 		frame.dispose();
 	}
@@ -167,14 +174,14 @@ public class ReplViz
 				if (last == null) {
 					geo.setY(0);
 				} else {
-					geo.setY(last.getY() + last.getHeight() + ENTITY_SPACING);
+					geo.setY(last.getY() + last.getHeight() + VERTICAL_SPACING);
 				}
 				model.setGeometry(resultset.entity(), geo);
 				last = geo;
 			}
 			if (last != null) {
 				pgeo = (mxGeometry) pgeo.clone();
-				pgeo.setHeight(last.getY() + last.getHeight() + ENTITY_SPACING);
+				pgeo.setHeight(last.getY() + last.getHeight() + VERTICAL_SPACING);
 				model.setGeometry(parent, pgeo);
 			}
 		}
@@ -227,14 +234,19 @@ public class ReplViz
 	private void initGraphs()
 	{
 		if (graph == null) return;
-		Object parent = graph.getDefaultParent();
-		graph.getModel().beginUpdate();
-		try {
-			variableListCell = insertContainer(null, "Variables", VARIABLE_CONTAINER_OFFSET_X, 0);
-		}
-		finally {
-			graph.getModel().endUpdate();
-		}
+		Variable.graph = graph;
+		rootContainer = Container.getRoot();
+		rootContainer.initialize();
+		rootContainer.visualize();
+		/*
+		   graph.getModel().beginUpdate();
+		   try {
+		   variableListCell = insertContainer(null, "Variables", VARIABLE_CONTAINER_OFFSET_X, 0);
+		   }
+		   finally {
+		   graph.getModel().endUpdate();
+		   }
+		   */
 
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 		// frame.pack();
@@ -245,7 +257,7 @@ public class ReplViz
 		Map<String, Object> edge = new HashMap<String, Object>();
 		edge.put(mxConstants.STYLE_ROUNDED, true);
 		edge.put(mxConstants.STYLE_ORTHOGONAL, true);
-		edge.put(mxConstants.STYLE_EDGE, "orthogonalEdgeStyle");
+		edge.put(mxConstants.STYLE_EDGE, mxEdgeStyle.SideToSide);
 		edge.put(mxConstants.STYLE_PORT_CONSTRAINT, mxConstants.DIRECTION_EAST + mxConstants.DIRECTION_WEST);
 		edge.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CONNECTOR);
 		edge.put(mxConstants.STYLE_ENDARROW, mxConstants.ARROW_CLASSIC);
