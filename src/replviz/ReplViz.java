@@ -49,9 +49,6 @@ public class ReplViz
 	private mxGraph graph;
 	private mxGraphComponent component;
 	/* Contains Result as key, map of referrer cell and entity cell as value */
-	private Map<String, rvResultSet> results;
-
-	private mxCell variableListCell;
 	private Container rootContainer;
 
 	private ReplViz ()
@@ -63,7 +60,6 @@ public class ReplViz
 	{
 		this.component = component;
 		this.graph = component.getGraph();
-		this.results = new HashMap<String, rvResultSet>();
 
 		this.graph.setAllowDanglingEdges(false);
 		this.graph.setAutoSizeCells(true);
@@ -82,69 +78,6 @@ public class ReplViz
 		if (graph == null) return;
 		rootContainer.addContent(type, key, value);
 		rootContainer.redraw();
-		/*
-		   rvResult result = new rvResult(key, value, type);
-		   rvResultSet resultset = null;
-		   if (results.containsKey(key)) {
-		   if (searchValue(results.get(key).result().value()) == null && searchValue(value) == null) {
-		   results.get(key).removeCells(graph);
-		   } else {
-		   results.get(key).removeEdge(graph);
-		   }
-		   results.remove(key);
-		   }
-		   resultset = new rvResultSet(result);
-
-		   mxCell referrer = resultset.insertRefer(graph, variableListCell);
-		   rvResultSet foundResult = searchValue(value);
-		   mxCell entity = null;
-		   if (foundResult != null) {
-		   entity = foundResult.entity();
-		   }
-		   if (result.value() != null && ! result.isPrimitive()) {
-		   if (entity == null) {
-		   mxCell entityContainer =
-		   insertContainer(null, result.valueRef(), ENTITY_CONTAINER_OFFSET_X, 0);
-		   entity = resultset.insertEntity(graph, entityContainer);
-		   } else {
-		   resultset.entity(entity);
-		   }
-		   }
-		   results.put(key, resultset);
-		   if (entity != null) {
-		   graph.getModel().beginUpdate();
-		   try {
-		   graph.insertEdge(graph.getDefaultParent(), null, null, referrer, entity);
-		   }
-		   finally {
-		   graph.getModel().endUpdate();
-		   }
-		   updateEntityLayout();
-		   }
-		   JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-		// frame.pack();
-		*/
-	}
-
-	public mxCell insertContainer (Object parent, String title, double x, double y)
-	{
-		if (parent == null) {
-			parent = graph.getDefaultParent();
-		} else if (parent instanceof mxGraph) {
-			parent = ((mxGraph) parent).getDefaultParent();
-		}
-		mxCell cell = null;
-
-		graph.getModel().beginUpdate();
-		try {
-			cell = (mxCell) graph.insertVertex(
-					parent, null,title, x, y,
-					CONTAINER_WIDTH, CONTAINER_HEIGHT, "shape=swimlane;foldable=0;fillColor=#999;fontColor=#000;");
-		}
-		finally {
-			graph.getModel().endUpdate();
-		}
-		return cell;
 	}
 
 	public void close ()
@@ -153,53 +86,6 @@ public class ReplViz
 		rootContainer.reset();
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 		frame.dispose();
-	}
-
-	private void updateEntityLayout ()
-	{
-		Object parent = graph.getDefaultParent();
-		mxIGraphModel model = graph.getModel();
-		mxRectangle tmp = new mxRectangle();
-		mxGeometry pgeo = new mxGeometry(0, 0, tmp.getWidth(), tmp.getHeight());
-		mxGeometry last = null;
-		List<String> done = new ArrayList<String>();
-		try {
-			for (rvResultSet resultset: results.values()) {
-				if (resultset.entity() == null) continue;
-				if (done.contains(resultset.result().value().toString())) continue;
-				done.add(resultset.result().value().toString());
-				mxGeometry geo = (mxGeometry) model.getGeometry(resultset.entity());
-				geo = (mxGeometry) geo.clone();
-				geo.setX(ENTITY_CONTAINER_OFFSET_X);
-				if (last == null) {
-					geo.setY(0);
-				} else {
-					geo.setY(last.getY() + last.getHeight() + VERTICAL_SPACING);
-				}
-				model.setGeometry(resultset.entity(), geo);
-				last = geo;
-			}
-			if (last != null) {
-				pgeo = (mxGeometry) pgeo.clone();
-				pgeo.setHeight(last.getY() + last.getHeight() + VERTICAL_SPACING);
-				model.setGeometry(parent, pgeo);
-			}
-		}
-		finally {
-			graph.getView().reload();
-			graph.refresh();
-			model.endUpdate();
-		}
-	}
-	private rvResultSet searchValue (Object value)
-	{
-		if (value == null) return null;
-		for (rvResultSet resultset: results.values()) {
-			if (Utils.hasEqualID(value, resultset.result().value())) {
-				return resultset;
-			}
-		}
-		return null;
 	}
 
 	public static ReplViz run ()
@@ -238,15 +124,6 @@ public class ReplViz
 		rootContainer = Container.getRoot();
 		rootContainer.initialize();
 		rootContainer.visualize();
-		/*
-		   graph.getModel().beginUpdate();
-		   try {
-		   variableListCell = insertContainer(null, "Variables", VARIABLE_CONTAINER_OFFSET_X, 0);
-		   }
-		   finally {
-		   graph.getModel().endUpdate();
-		   }
-		   */
 
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
 		// frame.pack();
