@@ -168,4 +168,23 @@ public class rvResult
 
 		return frame;
 	}
+
+	public void removeVariable (mxGraph graph)
+	{
+		graph.getModel().beginUpdate();
+		try {
+			Object[] edges = graph.getEdgesBetween(referCell, entityCell);
+			for (Object edge: edges) {
+				graph.getModel().remove(edge);
+			}
+			graph.getModel().remove(referCell);
+			graph.getModel().remove(entityCell);
+			referCell = null;
+			entityCell = null;
+		}
+		finally {
+			graph.getModel().endUpdate();
+		}
+	}
+
 }
