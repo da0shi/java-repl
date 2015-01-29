@@ -32,15 +32,21 @@ public class Content
 	public void initialize ()
 	{
 		Variable.contents.put(ID, this);
-		if (isNull || isPrimitive || isArray) return;
+		if (isNull || isPrimitive) return;
 
 		if (! container.isRoot() && Utils.isJavaPackage(container.value().getClass())) return;
+		if (ID == container.ID) {
+			if (! isArray) {
+				refer.addReferrer(this);
+			}
+			return;
+		}
 		if (Variable.containerIDs.contains(ID)) {
 			refer = (Container) Variable.containers.get(ID);
 			refer.addReferrer(this);
 		}
 		else {
-			refer = new Container(name +"@"+ hexID(), value);
+			refer = new Container(Utils.getType(type) +"@"+ hexID(), value);
 			refer.initialize(this);
 		}
 	}
@@ -87,8 +93,7 @@ public class Content
 		}
 		else if (isArray) {
 			if (refer == null) {
-				label = classname +" "+ name +" = "+
-					javarepl.rendering.ValueRenderer.renderValue(value);
+				label = javarepl.rendering.ValueRenderer.renderValue(value);
 			}
 		}
 		else if (Utils.isOverridden(value, "toString")) {

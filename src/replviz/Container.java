@@ -66,6 +66,11 @@ public class Container
 				e.printStackTrace();
 			}
 		}
+		if (fields.length == 0) {
+			Content c = new Content(this, Utils.extractType(value.getClass()), name, value);
+			c.initialize();
+			members.add(c);
+		}
 		if (! Variable.containerIDs.contains(ID)) {
 			Variable.containerIDs.add(ID);
 			Variable.containers.put(ID, this);
@@ -104,6 +109,7 @@ public class Container
 			for (Content c : members) {
 				c.visualize();
 			}
+
 		}
 		finally {
 			Variable.graph.getView().reload();
